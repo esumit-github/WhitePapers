@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>White Paper Portfolio — Sumit Kumar Mitra</title>
+<style>
+/* ============================================================
+   PALETTE: Golden Taupe
+   Sidebar:   #bdb76b  (gold-mute — warm sage gold)
+   Primary:   #d8b74b  (gold)
+   Background:#fdfbd4  (warm near-white)
+   Accent:    #ce8946  (burnt amber)
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold:         #d8b74b;
+  --gold-mute:    #bdb76b;
+  --bg:           #fdfbd4;
+  --amber:        #ce8946;
+  --sidebar-bg:   #bdb76b;
+  --sidebar-dark: #8a7a3a;
+  --sidebar-ink:  #2b2208;
+  --sidebar-mid:  #4a3e10;
+  --ink:          #2b2410;
+  --ink-mid:      #5a4a28;
+  --ink-light:    #8a7a55;
+  --rule:         #e8d89a;
+  --card-bg:      #fffef0;
+  --tag-bg:       #f5edcc;
+  --sidebar-w:    272px;
+  --topbar-h:     52px;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════════════════════════ */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  color: var(--sidebar-ink);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.28s cubic-bezier(.4,0,.2,1),
+              min-width 0.28s cubic-bezier(.4,0,.2,1),
+              opacity 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+  border-right: 2px solid var(--sidebar-dark);
+}
+
+#sidebar.collapsed {
+  width: 0;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#sidebar-header {
+  padding: 24px 20px 18px;
+  border-bottom: 1px solid var(--sidebar-dark);
+}
+
+#sidebar-header .series-label {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--sidebar-mid);
+  margin-bottom: 9px;
+}
+
+#sidebar-header h1 {
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--sidebar-ink);
+  line-height: 1.3;
+}
+
+#sidebar-header .author {
+  margin-top: 9px;
+  font-size: 11px;
+  color: var(--sidebar-mid);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+#nav-list {
+  list-style: none;
+  padding: 10px 0;
+  flex: 1;
+}
+
+#nav-list li {
+  border-bottom: 1px solid rgba(42,32,8,0.12);
+}
+
+#nav-list li a {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 20px;
+  text-decoration: none;
+  color: var(--sidebar-mid);
+  font-family: 'Courier New', monospace;
+  font-size: 11.5px;
+  line-height: 1.4;
+  transition: background 0.14s, color 0.14s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#nav-list li a:hover,
+#nav-list li a.active {
+  background: rgba(42,32,8,0.15);
+  color: var(--sidebar-ink);
+}
+
+#nav-list li a.active {
+  border-left: 3px solid var(--amber);
+  padding-left: 17px;
+}
+
+.nav-code {
+  font-weight: bold;
+  color: var(--sidebar-ink);
+  min-width: 36px;
+  margin-top: 1px;
+  opacity: 0.7;
+}
+
+.nav-name { line-height: 1.4; overflow: hidden; }
+
+.nav-status {
+  margin-left: auto;
+  font-size: 9px;
+  padding: 2px 5px;
+  border-radius: 8px;
+  white-space: nowrap;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.status-published { background: rgba(42,100,20,0.2); color: #2a5010; }
+.status-draft     { background: rgba(206,137,70,0.2); color: #8a4a10; }
+.status-planned   { background: rgba(42,32,8,0.12);   color: var(--sidebar-mid); }
+
+#sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--sidebar-dark);
+  font-size: 10.5px;
+  color: var(--sidebar-mid);
+  font-family: 'Courier New', monospace;
+}
+
+.progress-bar-wrap {
+  margin-top: 7px;
+  background: rgba(42,32,8,0.15);
+  border-radius: 4px;
+  height: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--amber), var(--gold));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* ════════════════════════════════════════════════════════════
+   TOGGLE BUTTON
+════════════════════════════════════════════════════════════ */
+#sidebar-toggle {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 100;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--sidebar-dark);
+  color: var(--bg);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.14s, left 0.28s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+#sidebar-toggle:hover { background: var(--amber); }
+
+body.sidebar-open #sidebar-toggle { left: calc(var(--sidebar-w) + 10px); }
+
+/* ════════════════════════════════════════════════════════════
+   MAIN
+════════════════════════════════════════════════════════════ */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+}
+
+/* ── TOP BAR ─────────────────────────────────────────────── */
+#topbar {
+  background: var(--card-bg);
+  border-bottom: 2px solid var(--rule);
+  padding: 0 40px 0 58px;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.breadcrumb {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--ink-light);
+}
+
+.breadcrumb .crumb-link {
+  color: var(--amber);
+  cursor: pointer;
+}
+
+.breadcrumb .crumb-link:hover { text-decoration: underline; }
+
+#topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── BUTTONS ──────────────────────────────────────────────── */
+.btn {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  padding: 6px 13px;
+  border-radius: 4px;
+  border: 1px solid var(--gold-mute);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s, border-color 0.14s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--tag-bg); border-color: var(--gold); color: var(--ink); }
+.btn.primary { background: var(--amber); border-color: var(--amber); color: white; }
+.btn.primary:hover { background: #b07030; border-color: #b07030; }
+.btn.back { border-color: var(--ink-light); }
+
+/* ════════════════════════════════════════════════════════════
+   LANDING
+════════════════════════════════════════════════════════════ */
+#landing { flex: 1; display: flex; flex-direction: column; }
+
+#landing-hero {
+  background: linear-gradient(135deg, #2b2410 0%, #3a2e10 55%, #2a1e08 100%);
+  padding: 56px 48px 48px;
+  border-bottom: 3px solid var(--amber);
+}
+
+#landing-hero .series {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold-mute);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+#landing-hero h1 {
+  font-size: 48px;
+  font-weight: normal;
+  color: var(--gold);
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+#landing-hero .tagline {
+  font-size: 18px;
+  color: #c8b870;
+  font-style: italic;
+  margin-bottom: 28px;
+  max-width: 680px;
+  line-height: 1.55;
+}
+
+#landing-hero .author-line {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #8a7a55;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+#landing-hero .author-line .pipe { color: #4a3e22; }
+
+#landing-grid {
+  padding: 38px 48px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ── LANDING FOOTER ──────────────────────────────────────── */
+.landing-copyright {
+  margin: 0 48px 32px;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── CARDS ────────────────────────────────────────────────── */
+.paper-card {
+  background: var(--card-bg);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 20px 22px;
+  cursor: pointer;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.paper-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(43,36,16,0.12);
+  border-color: var(--gold);
+}
+
+.paper-card.locked { opacity: 0.5; cursor: default; }
+.paper-card.locked:hover { transform: none; box-shadow: none; border-color: var(--rule); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card-code {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 1px;
+}
+
+.card-status-badge {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: normal;
+  color: var(--gold);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.card-subtitle {
+  font-size: 12.5px;
+  color: var(--ink-mid);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.card-gap {
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  color: var(--amber);
+  background: var(--tag-bg);
+  padding: 3px 8px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PAPER HERO
+════════════════════════════════════════════════════════════ */
+.paper-hero {
+  background: linear-gradient(135deg, #2b2410 0%, #3a2e10 60%, #5a4420 100%);
+  padding: 46px 40px 38px;
+  color: var(--bg);
+  border-bottom: 3px solid var(--amber);
+  flex-shrink: 0;
+}
+
+.paper-hero .paper-code {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold-mute);
+  margin-bottom: 12px;
+}
+
+.paper-hero h2 {
+  font-size: 40px;
+  font-weight: normal;
+  color: var(--gold);
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.paper-hero .subtitle {
+  font-size: 16px;
+  color: #d0c090;
+  font-style: italic;
+  margin-bottom: 24px;
+  max-width: 780px;
+  line-height: 1.5;
+}
+
+.meta-row {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+}
+
+.meta-item { display: flex; flex-direction: column; gap: 3px; }
+
+.meta-label {
+  color: var(--gold-mute);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.meta-value { color: var(--bg); }
+
+/* ════════════════════════════════════════════════════════════
+   PAPER BODY
+════════════════════════════════════════════════════════════ */
+.paper-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── ARTICLE ──────────────────────────────────────────────── */
+.paper-article {
+  flex: 1;
+  padding: 40px 46px;
+  max-width: 840px;
+  line-height: 1.8;
+  font-size: 15px;
+  overflow-y: auto;
+}
+
+.paper-article h2 {
+  font-size: 21px;
+  color: var(--amber);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 7px;
+  margin: 38px 0 16px;
+  font-weight: normal;
+}
+
+.paper-article h3 {
+  font-size: 16px;
+  color: var(--ink-mid);
+  margin: 26px 0 10px;
+  font-weight: bold;
+}
+
+.paper-article h4 {
+  font-size: 13px;
+  color: var(--ink);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 20px 0 9px;
+}
+
+.paper-article p { margin-bottom: 15px; }
+.paper-article ul, .paper-article ol { margin: 10px 0 14px 20px; }
+.paper-article li { margin-bottom: 5px; }
+
+.paper-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  font-size: 13.5px;
+}
+
+.paper-article th {
+  background: var(--ink);
+  color: var(--gold);
+  padding: 9px 13px;
+  text-align: left;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.paper-article td {
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.paper-article tr:nth-child(even) td { background: var(--tag-bg); }
+.paper-article tr:hover td { background: #f0e8c8; }
+
+.paper-article code {
+  font-family: 'Courier New', monospace;
+  background: var(--tag-bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12.5px;
+  color: #5a3a10;
+}
+
+.paper-article pre {
+  background: #1e1810;
+  color: #d8c890;
+  padding: 18px 22px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.6;
+  margin: 16px 0;
+  border-left: 3px solid var(--amber);
+}
+
+.paper-article pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+.paper-article blockquote {
+  border-left: 3px solid var(--gold);
+  margin: 18px 0;
+  padding: 13px 18px;
+  background: var(--tag-bg);
+  font-style: italic;
+  color: var(--ink-mid);
+  border-radius: 0 4px 4px 0;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 30px 0;
+}
+
+/* ── PAPER FOOTER (copyright per page) ──────────────────── */
+.paper-footer {
+  padding: 18px 46px;
+  border-top: 1px solid var(--rule);
+  background: var(--card-bg);
+  flex-shrink: 0;
+}
+
+/* ── ASIDE ──────────────────────────────────────────────── */
+.paper-aside {
+  width: 248px;
+  min-width: 248px;
+  border-left: 1px solid var(--rule);
+  padding: 28px 20px;
+  background: var(--card-bg);
+  overflow-y: auto;
+}
+
+.aside-card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.aside-card h4 {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 10px;
+}
+
+.aside-card p, .aside-card li {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-mid);
+}
+
+.aside-card ul { padding-left: 14px; }
+.aside-card li { margin-bottom: 4px; }
+
+.gap-badge {
+  display: inline-block;
+  background: var(--amber);
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 7px;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--tag-bg);
+  color: var(--ink-mid);
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  margin: 2px 2px 2px 0;
+}
+
+.toc-list { list-style: none; padding: 0; }
+.toc-list li { margin-bottom: 5px; }
+.toc-list a {
+  text-decoration: none;
+  color: var(--ink-mid);
+  font-size: 12.5px;
+  display: flex;
+  gap: 7px;
+}
+.toc-list a:hover { color: var(--amber); }
+.toc-num {
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  color: var(--gold-mute);
+  min-width: 18px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   COPYRIGHT COMPONENT (reused everywhere)
+════════════════════════════════════════════════════════════ */
+.copyright {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--ink-light);
+}
+
+.copyright .c-mark {
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--gold-mute);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+
+.copyright .c-text strong { color: var(--ink-mid); }
+
+/* ════════════════════════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-mute); }
+
+/* ════════════════════════════════════════════════════════════
+   SWAGGER-STYLE API COMPONENTS
+════════════════════════════════════════════════════════════ */
+
+/* Endpoint block */
+.sw-endpoint {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  margin: 10px 0;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}
+
+.sw-endpoint-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+
+.sw-endpoint-header:hover { filter: brightness(1.06); }
+
+.sw-endpoint.get    .sw-endpoint-header { background: #e8f4e0; border-left: 4px solid #49a849; }
+.sw-endpoint.post   .sw-endpoint-header { background: #e8f0fb; border-left: 4px solid #4a7ac8; }
+.sw-endpoint.patch  .sw-endpoint-header { background: #fef4e0; border-left: 4px solid #d8943a; }
+.sw-endpoint.delete .sw-endpoint-header { background: #fde8e8; border-left: 4px solid #c84a4a; }
+
+.sw-method {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 9px;
+  border-radius: 4px;
+  min-width: 54px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.get    .sw-method { background: #49a849; color: white; }
+.post   .sw-method { background: #4a7ac8; color: white; }
+.patch  .sw-method { background: #d8943a; color: white; }
+.delete .sw-method { background: #c84a4a; color: white; }
+
+.sw-path {
+  font-size: 13.5px;
+  color: var(--ink);
+  flex: 1;
+}
+
+.sw-path .path-param { color: var(--amber); }
+
+.sw-summary {
+  font-size: 12px;
+  color: var(--ink-light);
+  font-style: italic;
+  font-family: Georgia, serif;
+  margin-left: auto;
+  text-align: right;
+}
+
+.sw-chevron {
+  font-size: 10px;
+  color: var(--ink-light);
+  transition: transform 0.2s;
+  margin-left: 6px;
+}
+
+.sw-endpoint.open .sw-chevron { transform: rotate(180deg); }
+
+.sw-endpoint-body {
+  display: none;
+  padding: 16px 18px;
+  background: #fafaf0;
+  border-top: 1px solid var(--rule);
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+}
+
+.sw-endpoint.open .sw-endpoint-body { display: block; }
+
+.sw-params-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+}
+
+.sw-param-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 12.5px;
+}
+
+.sw-param-row:last-child { border-bottom: none; }
+
+.sw-param-name { color: #5a3a10; min-width: 170px; }
+.sw-param-type { color: #3a7a3a; min-width: 80px; font-size: 11px; }
+.sw-param-req  { color: #c84a4a; font-size: 10px; min-width: 50px; }
+.sw-param-desc { color: var(--ink-light); font-family: Georgia, serif; font-size: 12px; font-style: italic; flex: 1; }
+
+.sw-response-row {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 12.5px;
+}
+
+.sw-response-row:last-child { border-bottom: none; }
+
+.sw-status {
+  font-weight: bold;
+  min-width: 40px;
+  font-size: 12px;
+}
+
+.sw-status.s2 { color: #49a849; }
+.sw-status.s4 { color: #d8943a; }
+.sw-status.s5 { color: #c84a4a; }
+
+.sw-status-desc { color: var(--ink-mid); font-family: Georgia, serif; font-size: 12.5px; font-style: italic; }
+
+/* Schema component */
+.sw-schema {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 10px 0;
+  font-family: 'Courier New', monospace;
+}
+
+.sw-schema-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #2b2410;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sw-schema-name {
+  font-size: 14px;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+.sw-schema-type {
+  font-size: 10px;
+  color: var(--gold-mute);
+  background: rgba(255,255,255,0.1);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.sw-schema-required {
+  font-size: 10px;
+  color: #ff9a7a;
+  margin-left: auto;
+}
+
+.sw-schema-body {
+  display: none;
+  background: #fafaf0;
+  border-top: 1px solid var(--rule);
+}
+
+.sw-schema.open .sw-schema-body { display: block; }
+.sw-schema.open .sw-chevron { transform: rotate(180deg); }
+
+.sw-field {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 18px;
+  border-bottom: 1px solid #f0e8d0;
+  font-size: 12.5px;
+}
+
+.sw-field:last-child { border-bottom: none; }
+.sw-field.nested { padding-left: 36px; background: #f8f4e4; }
+.sw-field.required .sw-field-name::after { content: '*'; color: #c84a4a; font-size: 10px; margin-left: 2px; }
+
+.sw-field-name  { color: #5a3a10; min-width: 200px; font-weight: bold; }
+.sw-field-type  { color: #3a7a3a; min-width: 100px; font-size: 11.5px; }
+.sw-field-fmt   { color: #8a6a3a; font-size: 11px; min-width: 80px; }
+.sw-field-flags { font-size: 10px; min-width: 70px; }
+.sw-field-flags .ro  { color: #9a6a4a; background: #f5edcc; padding: 1px 5px; border-radius: 3px; }
+.sw-field-flags .req { color: #c84a4a; background: #fde8e8; padding: 1px 5px; border-radius: 3px; }
+.sw-field-desc  { color: var(--ink-light); font-family: Georgia, serif; font-size: 12px; font-style: italic; flex: 1; }
+.sw-field-enum  { font-size: 11px; color: #4a7ac8; flex: 1; line-height: 1.6; }
+
+.sw-resource-group {
+  margin-bottom: 20px;
+}
+
+.sw-resource-tag {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  padding: 6px 0 8px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 8px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PRINT STYLES  — A4/Letter page-safe, no overlap
+════════════════════════════════════════════════════════════ */
+@media print {
+  /* ── Page geometry ── */
+  @page {
+    size: A4;
+    margin: 1.8cm 2cm 2cm 2cm;
+  }
+
+  /* ── Reset all flex/overflow tricks that clip content ── */
+  *, *::before, *::after { box-sizing: border-box !important; }
+
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    background: white !important;
+    font-size: 11pt;
+  }
+
+  /* ── Hide chrome ── */
+  #sidebar,
+  #sidebar-toggle,
+  #topbar,
+  .paper-aside,
+  #landing,
+  #placeholder-wrap        { display: none !important; }
+
+  /* ── Main becomes a plain block, not a flex column ── */
+  #main {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  /* ── Each paper container is a block; only the visible one prints ── */
+  .paper-container {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+    page-break-before: auto;
+  }
+
+  /* ── Hero banner ── */
+  .paper-hero {
+    display: block !important;
+    padding: 24px 32px 20px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    width: 100% !important;
+  }
+
+  /* ── Body: stack article over aside (aside hidden) ── */
+  .paper-body {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  /* ── Article ── */
+  .paper-article {
+    display: block !important;
+    padding: 0 32px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    font-size: 10.5pt;
+    line-height: 1.7;
+  }
+
+  /* ── Headings: keep with next content, avoid orphans ── */
+  h2, h3, h4 {
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* ── Tables: avoid mid-row breaks; repeat header on each page ── */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+    font-size: 9.5pt;
+  }
+  thead { display: table-header-group; }
+  tr    { page-break-inside: avoid; page-break-after: auto; }
+  th, td { padding: 5px 10px !important; }
+
+  /* ── Code blocks ── */
+  pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    page-break-inside: avoid !important;
+    background: #f5f5f5 !important;
+    color: #333 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-size: 8.5pt !important;
+    border-left: 3px solid #ce8946 !important;
+    padding: 10px 14px !important;
+    margin: 10px 0 !important;
+  }
+  pre code { background: none !important; color: inherit !important; }
+
+  /* ── Swagger/API components: always expanded, never clipped ── */
+  .sw-endpoint,
+  .sw-schema    { page-break-inside: avoid !important; }
+  .sw-endpoint-body,
+  .sw-schema-body {
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* ── Inline flex diagrams: stack vertically so nothing overlaps ── */
+  .paper-article div[style*="display:flex"],
+  .paper-article div[style*="display: flex"],
+  .meta-row {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .paper-article div[style*="display:flex"] > div,
+  .paper-article div[style*="display: flex"] > div {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* ── Section breaks ── */
+  .section-divider { page-break-after: avoid !important; }
+  .paper-article h2 { margin-top: 22pt !important; }
+
+  /* ── Footer ── */
+  .paper-footer {
+    display: block !important;
+    border-top: 1pt solid #ccc !important;
+    padding: 10px 32px !important;
+    margin-top: 20px !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* ── Copyright ── */
+  .copyright {
+    display: block !important;
+    font-size: 8.5pt !important;
+  }
+  .copyright .c-mark { display: none !important; }
+
+  /* ── Blockquote ── */
+  blockquote {
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════════ */
+@media (max-width: 860px) {
+  .paper-aside { display: none; }
+  .paper-article { padding: 24px 20px; }
+  #landing-grid { padding: 24px 20px; grid-template-columns: 1fr; }
+  #landing-hero { padding: 36px 24px 32px; }
+  .landing-copyright { margin: 0 24px 24px; }
+}
+</style>
+</head>
+<body class="sidebar-open">
+
+<!-- ══════════════════════════════════════════════════════════
+     TOGGLE BUTTON
+════════════════════════════════════════════════════════════ -->
+<button id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle navigation">☰</button>
+
+<!-- ══════════════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <div class="series-label">White Paper Portfolio</div>
+    <h1>AI-Native Systems<br>&amp; Open Standards</h1>
+    <div class="author">Sumit Kumar Mitra<br>Senior TPM · AI / Cloud / Standards</div>
+  </div>
+
+  <ul id="nav-list">
+    <li><a href="#" onclick="showLanding(); return false;" id="nav-home">
+      <span class="nav-code">⌂</span>
+      <span class="nav-name">Portfolio Overview</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('pragma'); return false;" id="nav-pragma">
+      <span class="nav-code">WP-01</span>
+      <span class="nav-name">PRAGMA<br>Intent API Design</span>
+      <span class="nav-status status-draft">Draft</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('agentis'); return false;" id="nav-agentis">
+      <span class="nav-code">WP-02</span>
+      <span class="nav-name">AGENTIS<br>Multi-Agent Protocols</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('luminos'); return false;" id="nav-luminos">
+      <span class="nav-code">WP-03</span>
+      <span class="nav-name">LUMINOS<br>LLM Observability</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('spektra'); return false;" id="nav-spektra">
+      <span class="nav-code">WP-04</span>
+      <span class="nav-name">SPEKTRA<br>AI-Native Scheduling</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('tessera'); return false;" id="nav-tessera">
+      <span class="nav-code">WP-05</span>
+      <span class="nav-name">TESSERA<br>Federated Learning</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('aegis'); return false;" id="nav-aegis">
+      <span class="nav-code">WP-06</span>
+      <span class="nav-name">AEGIS<br>Agent Security</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('rosetta'); return false;" id="nav-rosetta">
+      <span class="nav-code">WP-07</span>
+      <span class="nav-name">ROSETTA<br>Cross-Domain Orchestration</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('prism'); return false;" id="nav-prism">
+      <span class="nav-code">WP-08</span>
+      <span class="nav-name">PRISM<br>Accelerator Abstraction</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('veritas'); return false;" id="nav-veritas">
+      <span class="nav-code">WP-09</span>
+      <span class="nav-name">VERITAS<br>AI Governance &amp; Compliance</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+    <li><a href="#" onclick="showPaper('rubicon'); return false;" id="nav-rubicon">
+      <span class="nav-code">WP-10</span>
+      <span class="nav-name">RUBICON<br>PoC → Production</span>
+      <span class="nav-status status-planned">Planned</span>
+    </a></li>
+  </ul>
+
+  <div id="sidebar-footer">
+    <div>Progress: <strong id="progress-count">1 / 10</strong> papers</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:10%"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     MAIN
+════════════════════════════════════════════════════════════ -->
+<main id="main">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="breadcrumb" id="breadcrumb">
+      <span>Portfolio</span>
+    </div>
+    <div id="topbar-actions">
+      <button class="btn" onclick="exportPDF()">⎙ Export PDF</button>
+      <button class="btn" onclick="exportWord()">⬇ Export Word</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       LANDING PAGE
+  ════════════════════════════════════════════════════════ -->
+  <div id="landing">
+    <div id="landing-hero">
+      <div class="series">AI · Open Standards · Cloud-Native Architecture · 2026</div>
+      <h1>White Paper<br>Portfolio</h1>
+      <div class="tagline">Ten papers. Ten open problems in distributed AI systems, autonomous orchestration, and production-scale intelligent infrastructure.</div>
+      <div class="author-line">
+        <span>Sumit Kumar Mitra</span>
+        <span class="pipe">|</span>
+        <span>Senior Technical Programme Manager</span>
+        <span class="pipe">|</span>
+        <span>AI · Cloud · Open Standards</span>
+        <span class="pipe">|</span>
+        <span>7 Patent-Pending Innovations</span>
+      </div>
+    </div>
+
+    <div id="landing-grid">
+
+      <div class="paper-card" onclick="showPaper('pragma')">
+        <div class="card-header">
+          <span class="card-code">WP-01</span>
+          <span class="card-status-badge status-draft">● Draft</span>
+        </div>
+        <div class="card-title">PRAGMA</div>
+        <div class="card-subtitle">From Intent Expression to System Action: Designing a REST API Contract for Declarative Intent Management</div>
+        <div><span class="card-gap">Gap — No protocol binding for intent information models</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-02</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">AGENTIS</div>
+        <div class="card-subtitle">Standardising Multi-Agent Coordination: MCP, A2A, and the Protocol Grammar for Autonomous Systems</div>
+        <div><span class="card-gap">Gap — No standard protocol for agent-to-agent communication</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-03</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">LUMINOS</div>
+        <div class="card-subtitle">LLM Observability at Scale: Defining SLIs and SLOs for Foundation Models in Production Infrastructure</div>
+        <div><span class="card-gap">Gap — No carrier-grade SLI vocabulary for LLM workloads</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-04</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">SPEKTRA</div>
+        <div class="card-subtitle">AI-Native Resource Scheduling: How Large Language Models Reshape Distributed Workload Orchestration</div>
+        <div><span class="card-gap">Gap — No unified LLM-assisted scheduling model across standards</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-05</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">TESSERA</div>
+        <div class="card-subtitle">Federated Learning as a First-Class Infrastructure Resource: Lifecycle Modelling for Privacy-Preserving Distributed Training</div>
+        <div><span class="card-gap">Gap — No lifecycle model for FL workloads in infrastructure descriptors</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-06</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">AEGIS</div>
+        <div class="card-subtitle">The Agent Security Gap: Why There Is No Sandboxing Standard for Autonomous AI Agents and How to Fix It</div>
+        <div><span class="card-gap">Gap — No isolation or blast-radius standard for autonomous agents</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-07</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">ROSETTA</div>
+        <div class="card-subtitle">Cross-Domain Intent Orchestration: A Unified Translation Layer Across Competing Open Standards</div>
+        <div><span class="card-gap">Gap — No interoperability framework across intent standard bodies</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-08</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">PRISM</div>
+        <div class="card-subtitle">Accelerator Abstraction for AI Infrastructure: Why Cloud-Native Platforms Need a Unified GPU/NPU/DPU Resource Model</div>
+        <div><span class="card-gap">Gap — No unified northbound API for heterogeneous accelerators</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-09</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">VERITAS</div>
+        <div class="card-subtitle">Explainable Autonomous Systems: Compliance Architecture for Closed-Loop AI Under the EU AI Act</div>
+        <div><span class="card-gap">Gap — No explainability requirement in closed-loop autonomy standards</span></div>
+      </div>
+
+      <div class="paper-card locked">
+        <div class="card-header">
+          <span class="card-code">WP-10</span>
+          <span class="card-status-badge status-planned">○ Planned</span>
+        </div>
+        <div class="card-title" style="color:var(--ink-light)">RUBICON</div>
+        <div class="card-subtitle">The Production Gap: Why Most AI Pilots Never Reach Operations and the Architectural Patterns That Succeed</div>
+        <div><span class="card-gap">Cross-cutting — PoC-to-production architecture patterns</span></div>
+      </div>
+
+    </div><!-- /landing-grid -->
+
+    <!-- Landing copyright -->
+    <div class="landing-copyright">
+      <div class="copyright">
+        <div class="c-mark">©</div>
+        <div class="c-text">
+          <strong>© 2026 Sumit Kumar Mitra.</strong> All rights reserved.<br>
+          All white papers in this portfolio are original works. Reproduction in whole or in part without written permission is prohibited.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /landing -->
+
+  <!-- ════════════════════════════════════════════════════════
+       PAPER: PRAGMA (WP-01)
+  ════════════════════════════════════════════════════════ -->
+  <div id="paper-pragma" class="paper-container" style="display:none; flex-direction:column; flex:1; min-height:0;">
+
+    <div class="paper-hero">
+      <div class="paper-code">WP-01 · Open Standards Gap · Intent Management / API Design</div>
+      <h2>PRAGMA</h2>
+      <div class="subtitle">From Intent Expression to System Action: Designing a REST API Contract for Declarative Intent Management</div>
+      <div class="meta-row">
+        <div class="meta-item">
+          <span class="meta-label">Status</span>
+          <span class="meta-value">Draft V1</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Date</span>
+          <span class="meta-value">2026-05-11</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Author</span>
+          <span class="meta-value">Sumit Kumar Mitra</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="paper-body">
+      <article class="paper-article">
+
+        <h2>Abstract</h2>
+        <p>A growing class of open standards for distributed system management defines rich information models for <em>intent</em> — structured declarations of desired system state. These models specify what operators want: objectives, constraints, targets, and fulfilment conditions. Yet the specifications consistently stop at the boundary where they become useful: no REST API binding exists that makes intent information models machine-callable across vendor and platform boundaries.</p>
+        <p>This paper proposes <strong>PRAGMA</strong> — a normative REST API design that bridges declarative intent information models to an OpenAPI 3.1 resource contract. PRAGMA introduces a four-resource model, a negotiation workflow as a REST state machine, and a cross-standard comparison that surfaces both alignment opportunities and irreconcilable gaps requiring new standardisation work.</p>
+
+        <hr class="section-divider">
+
+        <h2>1. The Problem: Information Models Without Protocols</h2>
+
+        <h3>1.1 What Declarative Intent Models Define</h3>
+        <p>Modern distributed infrastructure management is converging on <em>intent-based</em> paradigms: instead of specifying <em>how</em> to configure a system, operators specify <em>what outcome</em> they require and allow the management plane to determine the implementation. Multiple open standards bodies have independently developed formal vocabularies for this pattern.</p>
+        <p>The core information elements are structurally consistent across these models:</p>
+
+        <table>
+          <thead><tr><th>Element</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td><code>IntentExpectation</code></td><td>Formal objective — goals, requirements, constraints</td></tr>
+            <tr><td><code>IntentObject</code></td><td>Container holding the complete intent definition</td></tr>
+            <tr><td><code>Condition</code></td><td>Constraints on fulfilment (temporal, resource, policy)</td></tr>
+            <tr><td><code>Context</code></td><td>Operational scope — time, location, policy domain</td></tr>
+            <tr><td><code>ExpectationTarget</code></td><td>Target resources or services the intent applies to</td></tr>
+            <tr><td><code>FulfilmentInfo</code></td><td>Actual fulfilment status and deviation detail</td></tr>
+            <tr><td><code>IntentObjectInstance</code></td><td>Runtime instantiation — current system state against the intent</td></tr>
+          </tbody>
+        </table>
+
+        <h3>1.2 What These Models Do Not Define</h3>
+        <p>Existing intent specifications explicitly scope themselves to <em>requirements and information model</em> only. They state no REST endpoints, no HTTP verbs, no request/response schemas, no error codes, no pagination conventions, no authentication binding.</p>
+        <p>The consequence is concrete: a system implementing Vendor A's management plane cannot programmatically exchange intent objects with a system implementing Vendor B's, without a proprietary adapter. No conformance test suite can exist. No open-source reference implementation is possible. The ecosystem is blocked at the last metre — the wire format.</p>
+
+        <h3>1.3 The Missing Protocol Binding Layer</h3>
+        <p>Every major intent standard has a corresponding API specification gap. The pattern is consistent: a rich information model with no REST binding. PRAGMA fills this gap with a design that is normatively grounded in existing information models while being independently implementable by any platform.</p>
+
+        <hr class="section-divider">
+
+        <h2>2. Related Work and Landscape</h2>
+
+        <!-- ══ CONVERGENCE BLOCK DIAGRAM ══ -->
+        <div style="margin: 28px 0 32px; font-family: 'Courier New', monospace;">
+
+          <!-- Row 1: two source boxes -->
+          <div style="display:flex; gap:18px; margin-bottom:0;">
+
+            <!-- Box A: Existing Intent APIs -->
+            <div style="flex:1; background: linear-gradient(135deg,#3a5a2a,#4a7a38); border-radius:10px 10px 0 0; padding:20px 20px 16px; color:#e8f5d8; border:1.5px solid #5a9a48; border-bottom:none; position:relative;">
+              <div style="font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:#a8d888; margin-bottom:8px;">Layer 1 — Service Management</div>
+              <div style="font-size:16px; font-weight:bold; color:#c8f0a0; margin-bottom:10px;">Existing Intent APIs</div>
+              <div style="font-size:12px; line-height:1.6; color:#d0ebb8;">
+                <div style="margin-bottom:5px;">✔ &nbsp;REST CRUD endpoints exist</div>
+                <div style="margin-bottom:5px;">✔ &nbsp;Lifecycle states defined</div>
+                <div style="margin-bottom:5px;">✔ &nbsp;Notification / subscription</div>
+                <div style="margin-bottom:5px; color:#ffcc88;">✘ &nbsp;Loosely typed expressions</div>
+                <div style="color:#ffcc88;">✘ &nbsp;No negotiation semantics</div>
+              </div>
+              <div style="margin-top:14px; background:rgba(0,0,0,0.2); border-radius:4px; padding:7px 10px; font-size:11px; color:#b0e090;">
+                <span style="color:#7fbb60;">ACK</span> → <span style="color:#d8b74b;">IN_PROGRESS</span> → <span style="color:#88e880;">SUCCEEDED</span> / <span style="color:#ff8888;">FAILED</span>
+              </div>
+            </div>
+
+            <!-- Box B: Infrastructure-Layer Intent Models -->
+            <div style="flex:1; background: linear-gradient(135deg,#1a3a5a,#1e4a72); border-radius:10px 10px 0 0; padding:20px 20px 16px; color:#d0e8f8; border:1.5px solid #2a6a9a; border-bottom:none; position:relative;">
+              <div style="font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:#7ab8e0; margin-bottom:8px;">Layer 2 — Infrastructure Management</div>
+              <div style="font-size:16px; font-weight:bold; color:#90d0f8; margin-bottom:10px;">Infrastructure-Layer Intent Models</div>
+              <div style="font-size:12px; line-height:1.6; color:#b8ddf8;">
+                <div style="margin-bottom:5px;">✔ &nbsp;Formal <code style="background:rgba(255,255,255,0.1);padding:1px 4px;border-radius:2px;font-size:11px;">IntentExpectation</code> schema</div>
+                <div style="margin-bottom:5px;">✔ &nbsp;Structured <code style="background:rgba(255,255,255,0.1);padding:1px 4px;border-radius:2px;font-size:11px;">FulfilmentInfo</code></div>
+                <div style="margin-bottom:5px;">✔ &nbsp;Negotiation semantics</div>
+                <div style="margin-bottom:5px; color:#ffcc88;">✘ &nbsp;No REST API binding</div>
+                <div style="color:#ffcc88;">✘ &nbsp;No wire-format specification</div>
+              </div>
+              <div style="margin-top:14px; background:rgba(0,0,0,0.2); border-radius:4px; padding:7px 10px; font-size:11px; color:#90c8e8;">
+                <span style="color:#7ab8e0;">CREATED</span> → <span style="color:#d8b74b;">NEGOTIATING</span> → <span style="color:#68c868;">FULFILLING</span> → <span style="color:#88e880;">FULFILLED</span>
+              </div>
+            </div>
+
+          </div><!-- /row1 -->
+
+          <!-- Connector / merge zone -->
+          <div style="display:flex; gap:18px; margin-bottom:0;">
+            <div style="flex:1; height:28px; background:#3a5a2a; border-left:1.5px solid #5a9a48; border-right:1.5px solid #5a9a48; display:flex; align-items:center; justify-content:center;">
+              <div style="width:2px; height:100%; background: linear-gradient(to bottom, #5a9a48, #8a7a3a);"></div>
+            </div>
+            <div style="flex:1; height:28px; background:#1a3a5a; border-left:1.5px solid #2a6a9a; border-right:1.5px solid #2a6a9a; display:flex; align-items:center; justify-content:center;">
+              <div style="width:2px; height:100%; background: linear-gradient(to bottom, #2a6a9a, #8a7a3a);"></div>
+            </div>
+          </div>
+
+          <!-- Merge arrow label -->
+          <div style="text-align:center; margin: -4px 0 0; position:relative; z-index:2;">
+            <span style="display:inline-block; background:var(--bg); padding:0 12px; font-family:'Courier New',monospace; font-size:11px; color:var(--amber); letter-spacing:1.5px; text-transform:uppercase;">
+              structural convergence detected
+            </span>
+          </div>
+
+          <!-- Row 2: convergence box -->
+          <div style="background: linear-gradient(135deg,#4a3808,#6a5010,#8a6a18); border-radius:0 0 10px 10px; padding:22px 24px 20px; border:2px solid var(--amber); border-top:none; margin-top:-1px;">
+            <div style="font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold-mute); margin-bottom:8px;">Layer 3 — Unified Protocol Binding</div>
+            <div style="font-size:18px; font-weight:bold; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+              The Convergence Opportunity
+              <span style="font-size:11px; background:var(--amber); color:white; padding:3px 10px; border-radius:10px; font-weight:normal; letter-spacing:1px; text-transform:uppercase;">PRAGMA fills this</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px;">
+              <div style="background:rgba(255,255,255,0.08); border-radius:6px; padding:12px 14px; border:1px solid rgba(216,183,75,0.3);">
+                <div style="font-size:10px; color:var(--gold-mute); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">From Layer 1</div>
+                <div style="font-size:12px; color:#e8d898; line-height:1.5;">REST endpoints + lifecycle states + subscription model</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.08); border-radius:6px; padding:12px 14px; border:1px solid rgba(216,183,75,0.3);">
+                <div style="font-size:10px; color:var(--gold-mute); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">From Layer 2</div>
+                <div style="font-size:12px; color:#e8d898; line-height:1.5;">Formal schema + negotiation semantics + FulfilmentInfo</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.15); border-radius:6px; padding:12px 14px; border:1px solid var(--amber);">
+                <div style="font-size:10px; color:var(--amber); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">PRAGMA adds</div>
+                <div style="font-size:12px; color:#ffe8b8; line-height:1.5; font-weight:bold;">OpenAPI 3.1 contract + cross-vendor wire format</div>
+              </div>
+            </div>
+            <div style="font-size:12px; color:#c8b870; font-style:italic; text-align:center; border-top:1px solid rgba(216,183,75,0.2); padding-top:12px;">
+              A single OpenAPI 3.1 specification that any compliant intent information model can project onto — independent of platform or vendor.
+            </div>
+          </div><!-- /convergence box -->
+
+        </div><!-- /diagram -->
+
+        <h3>2.1 Existing Intent APIs</h3>
+        <p>Service management bodies have published intent APIs with REST CRUD endpoints and lifecycle states. These are loosely typed — expressions support natural language — and critically lack intent <em>negotiation</em>: the bilateral feasibility exchange that must precede commitment at the infrastructure layer.</p>
+
+        <h3>2.2 Infrastructure-Layer Intent Models</h3>
+        <p>Infrastructure management standards define rigorous intent models with formal <code>IntentExpectation</code> structures, <code>FulfilmentInfo</code> monitoring, and negotiation semantics. But they stop at the information model — no REST binding, no wire format, no conformance surface. A PRAGMA API designed against these models could also serve as a cross-domain translation layer — the foundation for companion paper <strong>ROSETTA</strong> (WP-07).</p>
+
+        <h3>2.3 The Convergence Opportunity</h3>
+        <p>The structural similarity across independently developed models suggests a universal binding is achievable. PRAGMA is designed to be that binding: drawing REST conventions from Layer 1 and schema rigour from Layer 2 to produce a single specification that any compliant implementation can conform to.</p>
+
+        <hr class="section-divider">
+
+        <h2>3. PRAGMA — Proposed REST API Architecture</h2>
+
+        <h3>3.1 Design Principles</h3>
+        <ul>
+          <li><strong>Information-model normative:</strong> Every resource attribute maps 1:1 to a defined information element — no semantic gaps, no extensions that break conformance</li>
+          <li><strong>REST convention compliant:</strong> Follows established REST API patterns — pagination, filtering, RFC 7807 problem detail error model, subscription/notification patterns</li>
+          <li><strong>Cross-standard aligned where possible:</strong> Resources named to facilitate translation across competing standards</li>
+          <li><strong>OpenAPI 3.1:</strong> Full schema definition enabling auto-generation of client/server stubs and conformance test tooling</li>
+        </ul>
+
+        <h3>3.2 Resource Model</h3>
+
+        <div class="sw-resource-group">
+          <div class="sw-resource-tag">intents</div>
+
+          <div class="sw-endpoint post open">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">POST</span>
+              <span class="sw-path">/intents</span>
+              <span class="sw-summary">Create an IntentObjectInstance</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Request Body</div>
+              <div class="sw-param-row"><span class="sw-param-name">body</span><span class="sw-param-type">IntentObject</span><span class="sw-param-req">required</span><span class="sw-param-desc">Full intent definition including expectations, context, and conditions</span></div>
+              <div class="sw-params-label" style="margin-top:12px;">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">201</span><span class="sw-status-desc">Intent created. Negotiation not yet run. Returns IntentObjectInstance with state=Created.</span></div>
+              <div class="sw-response-row"><span class="sw-status s4">422</span><span class="sw-status-desc">Logically inconsistent intent — missing required expectation fields.</span></div>
+            </div>
+          </div>
+
+          <div class="sw-endpoint get">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">GET</span>
+              <span class="sw-path">/intents</span>
+              <span class="sw-summary">List IntentObjectInstances</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Query Parameters</div>
+              <div class="sw-param-row"><span class="sw-param-name">state</span><span class="sw-param-type">string</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Filter by lifecycle state: Created, Negotiating, Fulfilling, Fulfilled, Degraded, Failed</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">consumerId</span><span class="sw-param-type">string</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Filter by originating consumer identifier</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">targetDomain</span><span class="sw-param-type">string</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Filter by ExpectationTarget domain scope</span></div>
+              <div class="sw-params-label" style="margin-top:12px;">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">200</span><span class="sw-status-desc">Paginated list of IntentObjectInstances matching filter criteria.</span></div>
+            </div>
+          </div>
+
+          <div class="sw-endpoint get">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">GET</span>
+              <span class="sw-path">/intents/<span class="path-param">{intentId}</span></span>
+              <span class="sw-summary">Retrieve a specific IntentObjectInstance</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Path Parameters</div>
+              <div class="sw-param-row"><span class="sw-param-name">intentId</span><span class="sw-param-type">string (uuid)</span><span class="sw-param-req">required</span><span class="sw-param-desc">Unique identifier of the IntentObjectInstance</span></div>
+              <div class="sw-params-label" style="margin-top:12px;">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">200</span><span class="sw-status-desc">Returns full IntentObjectInstance including current state and FulfilmentInfo.</span></div>
+              <div class="sw-response-row"><span class="sw-status s4">404</span><span class="sw-status-desc">IntentObjectInstance not found.</span></div>
+            </div>
+          </div>
+
+          <div class="sw-endpoint patch">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">PATCH</span>
+              <span class="sw-path">/intents/<span class="path-param">{intentId}</span></span>
+              <span class="sw-summary">Update intent expectations or constraints</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Request Body (partial)</div>
+              <div class="sw-param-row"><span class="sw-param-name">intentExpectation</span><span class="sw-param-type">IntentExpectation</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Updated objectives or targets. Triggers re-evaluation.</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">conditions</span><span class="sw-param-type">Condition[]</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Revised constraint set.</span></div>
+              <div class="sw-params-label" style="margin-top:12px;">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">200</span><span class="sw-status-desc">Intent updated. State may transition back to Negotiating if expectations changed.</span></div>
+              <div class="sw-response-row"><span class="sw-status s4">409</span><span class="sw-status-desc">Conflict with an existing committed intent.</span></div>
+            </div>
+          </div>
+
+          <div class="sw-endpoint delete">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">DELETE</span>
+              <span class="sw-path">/intents/<span class="path-param">{intentId}</span></span>
+              <span class="sw-summary">Terminate and remove intent</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">204</span><span class="sw-status-desc">Intent terminated. Subscribers notified of deletion.</span></div>
+              <div class="sw-response-row"><span class="sw-status s4">404</span><span class="sw-status-desc">IntentObjectInstance not found.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sw-resource-group">
+          <div class="sw-resource-tag">negotiation</div>
+          <div class="sw-endpoint post">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">POST</span>
+              <span class="sw-path">/intents/<span class="path-param">{intentId}</span>/negotiate</span>
+              <span class="sw-summary">Initiate intent negotiation</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Request Body</div>
+              <div class="sw-param-row"><span class="sw-param-name">negotiationMode</span><span class="sw-param-type">string</span><span class="sw-param-req">required</span><span class="sw-param-desc">sync | async</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">constraints.deadline_utc</span><span class="sw-param-type">string (date-time)</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Latest acceptable commitment deadline</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">constraints.acceptable_degradation_pct</span><span class="sw-param-type">integer</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Max acceptable deviation from stated objectives (%)</span></div>
+              <div class="sw-params-label" style="margin-top:12px;">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">202</span><span class="sw-status-desc">Async negotiation initiated. Location header returns polling URL.</span></div>
+              <div class="sw-response-row"><span class="sw-status s4">422</span><span class="sw-status-desc">No feasible configuration exists for stated objectives.</span></div>
+            </div>
+          </div>
+
+          <div class="sw-endpoint get">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">GET</span>
+              <span class="sw-path">/intents/<span class="path-param">{intentId}</span>/fulfilment</span>
+              <span class="sw-summary">Retrieve current FulfilmentInfo</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">200</span><span class="sw-status-desc">Returns fulfilmentStatus, deviations array, and lastEvaluated timestamp.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sw-resource-group">
+          <div class="sw-resource-tag">subscriptions / notifications</div>
+          <div class="sw-endpoint post">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">POST</span>
+              <span class="sw-path">/intents/<span class="path-param">{intentId}</span>/subscriptions</span>
+              <span class="sw-summary">Subscribe to intent state changes</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Request Body</div>
+              <div class="sw-param-row"><span class="sw-param-name">callbackUri</span><span class="sw-param-type">string (uri)</span><span class="sw-param-req">required</span><span class="sw-param-desc">Consumer-hosted endpoint to receive state change events</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">filter.states</span><span class="sw-param-type">string[]</span><span class="sw-param-req">optional</span><span class="sw-param-desc">Only notify on these state transitions</span></div>
+              <div class="sw-params-label" style="margin-top:12px;">Responses</div>
+              <div class="sw-response-row"><span class="sw-status s2">201</span><span class="sw-status-desc">Subscription created. Returns subscriptionId.</span></div>
+            </div>
+          </div>
+
+          <div class="sw-endpoint post">
+            <div class="sw-endpoint-header" onclick="toggleEndpoint(this)">
+              <span class="sw-method">POST</span>
+              <span class="sw-path">/notifications <span style="font-size:10px;color:var(--ink-light);">(consumer-hosted)</span></span>
+              <span class="sw-summary">Receive intent state change event</span>
+              <span class="sw-chevron">▼</span>
+            </div>
+            <div class="sw-endpoint-body">
+              <div class="sw-params-label">Payload (CloudEvents envelope)</div>
+              <div class="sw-param-row"><span class="sw-param-name">intentId</span><span class="sw-param-type">string (uuid)</span><span class="sw-param-req">—</span><span class="sw-param-desc">Intent that changed state</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">previousState</span><span class="sw-param-type">string</span><span class="sw-param-req">—</span><span class="sw-param-desc">State before transition</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">currentState</span><span class="sw-param-type">string</span><span class="sw-param-req">—</span><span class="sw-param-desc">State after transition</span></div>
+              <div class="sw-param-row"><span class="sw-param-name">fulfilmentInfo</span><span class="sw-param-type">FulfilmentInfo</span><span class="sw-param-req">—</span><span class="sw-param-desc">Current fulfilment status snapshot</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>3.3 Intent Lifecycle as a REST State Machine</h3>
+        <pre><code>POST /intents
+     │
+     ▼
+  [Created]
+     │  POST /intents/{id}/negotiate
+     ▼
+  [Negotiating]
+     │  negotiation result: feasible
+     ▼
+  [Fulfilling]  ◄──── PATCH /intents/{id} (update)
+     │
+     ├──► [Fulfilled]   — GET /intents/{id}/fulfilment: full compliance
+     ├──► [Degraded]    — FulfilmentInfo.deviations populated; notification sent
+     └──► [Failed]      — DELETE or PATCH to re-attempt</code></pre>
+
+        <h3>3.4 Core Schema — IntentObject (OpenAPI 3.1)</h3>
+
+        <!-- IntentObject schema -->
+        <div class="sw-schema open">
+          <div class="sw-schema-header" onclick="toggleSchema(this)">
+            <span class="sw-schema-name">IntentObject</span>
+            <span class="sw-schema-type">object</span>
+            <span class="sw-schema-required">required: intentExpectation, context</span>
+            <span class="sw-chevron" style="color:var(--gold-mute); margin-left:8px;">▼</span>
+          </div>
+          <div class="sw-schema-body">
+            <div class="sw-field required">
+              <span class="sw-field-name">id</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">uuid</span>
+              <span class="sw-field-flags"><span class="ro">readOnly</span></span>
+              <span class="sw-field-desc">System-assigned unique identifier for this intent instance</span>
+            </div>
+            <div class="sw-field required">
+              <span class="sw-field-name">intentExpectation</span>
+              <span class="sw-field-type">IntentExpectation</span>
+              <span class="sw-field-fmt">$ref</span>
+              <span class="sw-field-flags"><span class="req">required</span></span>
+              <span class="sw-field-desc">Formal declaration of desired outcomes, targets, and objectives</span>
+            </div>
+            <div class="sw-field required">
+              <span class="sw-field-name">context</span>
+              <span class="sw-field-type">IntentContext</span>
+              <span class="sw-field-fmt">$ref</span>
+              <span class="sw-field-flags"><span class="req">required</span></span>
+              <span class="sw-field-desc">Operational scope — time window, policy domain, geographic constraint</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">conditions</span>
+              <span class="sw-field-type">Condition[]</span>
+              <span class="sw-field-fmt">array</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Additional constraints on when/how the intent may be fulfilled</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">state</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">enum</span>
+              <span class="sw-field-flags"><span class="ro">readOnly</span></span>
+              <span class="sw-field-enum">Created · Negotiating · Fulfilling · Fulfilled · Degraded · Failed</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">fulfilmentInfo</span>
+              <span class="sw-field-type">FulfilmentInfo</span>
+              <span class="sw-field-fmt">$ref</span>
+              <span class="sw-field-flags"><span class="ro">readOnly</span></span>
+              <span class="sw-field-desc">Current fulfilment status, deviations from objectives, last evaluated timestamp</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">consumerId</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">—</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Identifier of the system or operator that created this intent</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">createdAt</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">date-time</span>
+              <span class="sw-field-flags"><span class="ro">readOnly</span></span>
+              <span class="sw-field-desc">ISO 8601 timestamp of intent creation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- IntentExpectation schema -->
+        <div class="sw-schema open">
+          <div class="sw-schema-header" onclick="toggleSchema(this)">
+            <span class="sw-schema-name">IntentExpectation</span>
+            <span class="sw-schema-type">object</span>
+            <span class="sw-schema-required">required: expectationTargets, expectationObjective</span>
+            <span class="sw-chevron" style="color:var(--gold-mute); margin-left:8px;">▼</span>
+          </div>
+          <div class="sw-schema-body">
+            <div class="sw-field required">
+              <span class="sw-field-name">expectationId</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">—</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Scoped identifier for this expectation within the parent IntentObject</span>
+            </div>
+            <div class="sw-field required">
+              <span class="sw-field-name">expectationTargets</span>
+              <span class="sw-field-type">ExpectationTarget[]</span>
+              <span class="sw-field-fmt">array</span>
+              <span class="sw-field-flags"><span class="req">required</span></span>
+              <span class="sw-field-desc">Resources or services this expectation applies to. Each target includes domainId for cross-domain routing.</span>
+            </div>
+            <div class="sw-field required">
+              <span class="sw-field-name">expectationObjective</span>
+              <span class="sw-field-type">object</span>
+              <span class="sw-field-fmt">map&lt;string,string&gt;</span>
+              <span class="sw-field-flags"><span class="req">required</span></span>
+              <span class="sw-field-desc">Key-value outcome expressions. Keys = metric names; values = threshold expressions e.g. &ldquo;latency_ms&rdquo;: &ldquo;&lt;10&rdquo;</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">expectationContext</span>
+              <span class="sw-field-type">IntentContext</span>
+              <span class="sw-field-fmt">$ref</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Optional expectation-scoped context override (inherits from parent IntentObject.context if absent)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FulfilmentInfo schema -->
+        <div class="sw-schema">
+          <div class="sw-schema-header" onclick="toggleSchema(this)">
+            <span class="sw-schema-name">FulfilmentInfo</span>
+            <span class="sw-schema-type">object</span>
+            <span class="sw-schema-required">readOnly — returned by system</span>
+            <span class="sw-chevron" style="color:var(--gold-mute); margin-left:8px;">▼</span>
+          </div>
+          <div class="sw-schema-body">
+            <div class="sw-field">
+              <span class="sw-field-name">fulfilmentStatus</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">enum</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-enum">Fulfilled · Degraded · Failed · Pending</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">deviations</span>
+              <span class="sw-field-type">Deviation[]</span>
+              <span class="sw-field-fmt">array</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Each deviation records metric, expected value, actual value, and timestamp</span>
+            </div>
+            <div class="sw-field nested">
+              <span class="sw-field-name">deviations[].metric</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">—</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Metric name that deviated from expectation</span>
+            </div>
+            <div class="sw-field nested">
+              <span class="sw-field-name">deviations[].expected</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">—</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Threshold expression from IntentExpectation.expectationObjective</span>
+            </div>
+            <div class="sw-field nested">
+              <span class="sw-field-name">deviations[].actual</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">—</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Measured value at time of deviation</span>
+            </div>
+            <div class="sw-field">
+              <span class="sw-field-name">lastEvaluated</span>
+              <span class="sw-field-type">string</span>
+              <span class="sw-field-fmt">date-time</span>
+              <span class="sw-field-flags"></span>
+              <span class="sw-field-desc">Timestamp of most recent fulfilment evaluation cycle</span>
+            </div>
+          </div>
+        </div>
+
+        <h3>3.5 Negotiation Workflow</h3>
+        <p>The negotiation sub-resource models the bilateral feasibility exchange as an asynchronous REST interaction. The consumer submits an intent and constraints; the management plane evaluates feasibility and returns either a confirmation or a set of proposed modifications the consumer can accept or reject.</p>
+
+        <pre><code>// Request
+POST /intents/{intentId}/negotiate
+{
+  "negotiationMode": "async",
+  "constraints": {
+    "deadline_utc": "2026-05-15T00:00:00Z",
+    "acceptable_degradation_pct": 5
+  }
+}
+
+// Response (202 Accepted)
+Location: /intents/{intentId}/negotiate/{negotiationId}
+
+// Callback result
+{
+  "negotiationId": "uuid",
+  "feasibility": "PARTIAL",
+  "proposedModifications": [{
+    "expectationId": "exp-01",
+    "metric": "latency_ms",
+    "originalValue": "&lt;5",
+    "proposedValue": "&lt;8",
+    "reason": "Insufficient compute headroom on target cluster-03"
+  }],
+  "expiresAt": "2026-05-11T18:00:00Z"
+}</code></pre>
+
+        <hr class="section-divider">
+
+        <h2>4. Error Model (RFC 7807)</h2>
+        <table>
+          <thead><tr><th>HTTP Status</th><th>Meaning in PRAGMA context</th></tr></thead>
+          <tbody>
+            <tr><td>201 Created</td><td>Intent created; negotiation not yet run</td></tr>
+            <tr><td>202 Accepted</td><td>Async negotiation initiated</td></tr>
+            <tr><td>422 Unprocessable Entity</td><td>Intent logically inconsistent or infeasible</td></tr>
+            <tr><td>409 Conflict</td><td>Conflicts with an existing committed intent</td></tr>
+            <tr><td>503 Service Unavailable</td><td>Management plane temporarily unable to evaluate feasibility</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="section-divider">
+
+        <h2>5. Cross-Domain Extension — ROSETTA Preview</h2>
+        <p>A single management domain's intent scope terminates at its boundary. When a system spans multiple administrative domains, intents must be propagated and translated across those boundaries. PRAGMA anticipates this by including <code>domainId</code> in <code>ExpectationTarget</code>, defining <code>intentOriginRef</code> for forwarded intents, and making negotiation results portable. Full treatment in companion paper <strong>ROSETTA</strong> (WP-07).</p>
+
+        <hr class="section-divider">
+
+        <h2>6. Implementation Path</h2>
+
+        <h3>6.1 Reference Implementation</h3>
+        <p>PRAGMA can be prototyped using FastAPI (Python) for OpenAPI 3.1 auto-generation, Kubernetes Custom Resource Definitions for <code>IntentObject</code> with a controller implementing the state machine, and CNCF CloudEvents for portable notification payloads with zero platform dependency.</p>
+
+        <h3>6.2 Standards Contribution Path</h3>
+        <table>
+          <thead><tr><th>Step</th><th>Action</th><th>Venue</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Submit PRAGMA as a Study Item proposal</td><td>Relevant standards working group</td></tr>
+            <tr><td>2</td><td>Contribute OpenAPI 3.1 schema as normative annex</td><td>New API specification</td></tr>
+            <tr><td>3</td><td>Cross-standard alignment — mapping table</td><td>Multi-body collaboration</td></tr>
+            <tr><td>4</td><td>Reference implementation</td><td>Open source community</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="section-divider">
+
+        <h2>7. Impact</h2>
+        <table>
+          <thead><tr><th>Stakeholder</th><th>Problem Solved</th><th>Decision Maker</th></tr></thead>
+          <tbody>
+            <tr><td>Large-scale operators</td><td>Multi-vendor intent lock-in eliminated</td><td>CTO / VP Architecture</td></tr>
+            <tr><td>Platform vendors</td><td>Standards leadership through early conformance</td><td>VP Standards, Chief Architect</td></tr>
+            <tr><td>Cloud platforms</td><td>On-ramp to declarative intent without proprietary adapters</td><td>Principal Engineer / Director</td></tr>
+            <tr><td>Open-source communities</td><td>Reference implementation target with clear conformance surface</td><td>Technical Lead</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="section-divider">
+
+        <h2>8. Conclusion</h2>
+        <p>Declarative intent management is a well-designed paradigm that has been waiting for its protocol binding. The absence of a REST API layer is not theoretical — it is the concrete reason that intent-based system automation remains vendor-specific in 2026 rather than an interoperable industry capability.</p>
+        <blockquote>The automation industry does not need another intent framework whiteboard. It needs the API that makes intent executable. That is PRAGMA.</blockquote>
+
+        <hr class="section-divider">
+
+        <h2>References</h2>
+        <ol>
+          <li>Intent Management Service Interface and Information Model — Open Standards Body V4.5.1</li>
+          <li>Common REST API Conventions — Open Standards Body SOL013 V4.4.1</li>
+          <li>Intent API — Industry Forum Candidate Standard (TMF921 equivalent)</li>
+          <li>Intent-driven Management Service for Distributed Networks — Standards Body TS 28.312</li>
+          <li>IETF RFC 7807 — Problem Details for HTTP APIs</li>
+          <li>CNCF CloudEvents Specification V1.0.2</li>
+          <li>OpenAPI Initiative — OpenAPI Specification 3.1.0</li>
+          <li>Kubernetes Custom Resource Definitions — CNCF Reference</li>
+        </ol>
+
+      </article><!-- /paper-article -->
+
+      <!-- ASIDE -->
+      <aside class="paper-aside">
+        <div class="aside-card">
+          <h4>Open Gap Addressed</h4>
+          <div class="gap-badge">G1</div>
+          <p>No protocol binding exists for declarative intent information models in any major open standards suite. PRAGMA fills that gap with a normative OpenAPI 3.1 specification.</p>
+        </div>
+
+        <div class="aside-card">
+          <h4>Table of Contents</h4>
+          <ul class="toc-list">
+            <li><a href="#"><span class="toc-num">1.</span>The Problem</a></li>
+            <li><a href="#"><span class="toc-num">2.</span>Related Work</a></li>
+            <li><a href="#"><span class="toc-num">3.</span>PRAGMA API Architecture</a></li>
+            <li><a href="#"><span class="toc-num">4.</span>Error Model</a></li>
+            <li><a href="#"><span class="toc-num">5.</span>Cross-Domain Extension</a></li>
+            <li><a href="#"><span class="toc-num">6.</span>Implementation Path</a></li>
+            <li><a href="#"><span class="toc-num">7.</span>Impact</a></li>
+            <li><a href="#"><span class="toc-num">8.</span>Conclusion</a></li>
+          </ul>
+        </div>
+
+        <div class="aside-card">
+          <h4>Tags</h4>
+          <span class="tag">Intent-Based Architecture</span>
+          <span class="tag">REST API Design</span>
+          <span class="tag">OpenAPI 3.1</span>
+          <span class="tag">Declarative Systems</span>
+          <span class="tag">Open Standards</span>
+          <span class="tag">Cloud-Native</span>
+          <span class="tag">Kubernetes</span>
+          <span class="tag">Distributed Orchestration</span>
+        </div>
+
+        <div class="aside-card">
+          <h4>Companion Papers</h4>
+          <p><strong>ROSETTA (WP-07)</strong> — extends PRAGMA to cross-domain intent propagation across competing open standards bodies.</p>
+        </div>
+      </aside>
+    </div><!-- /paper-body -->
+
+    <!-- Per-paper copyright footer -->
+    <div class="paper-footer">
+      <div class="copyright">
+        <div class="c-mark">©</div>
+        <div class="c-text">
+          <strong>© 2026 Sumit Kumar Mitra.</strong> All rights reserved. · PRAGMA White Paper · WP-01 of 10<br>
+          Original work. Reproduction without written permission is prohibited. This notice is retained in all exported formats.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /paper-pragma -->
+
+  <!-- Placeholder (dynamically filled) -->
+  <div id="placeholder-wrap" style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; padding:80px 40px; text-align:center; gap:16px;">
+    <div id="placeholder-body"></div>
+    <div class="copyright" style="margin-top:24px; justify-content:center;">
+      <div class="c-mark">©</div>
+      <div class="c-text"><strong>© 2026 Sumit Kumar Mitra.</strong> All rights reserved.</div>
+    </div>
+  </div>
+
+</main><!-- /main -->
+
+<script>
+/* ── PAPER REGISTRY ──────────────────────────────────────── */
+const papers = {
+  pragma:  { label: 'WP-01 · PRAGMA',  live: true  },
+  agentis: { label: 'WP-02 · AGENTIS', live: false },
+  luminos: { label: 'WP-03 · LUMINOS', live: false },
+  spektra: { label: 'WP-04 · SPEKTRA', live: false },
+  tessera: { label: 'WP-05 · TESSERA', live: false },
+  aegis:   { label: 'WP-06 · AEGIS',   live: false },
+  rosetta: { label: 'WP-07 · ROSETTA', live: false },
+  prism:   { label: 'WP-08 · PRISM',   live: false },
+  veritas: { label: 'WP-09 · VERITAS', live: false },
+  rubicon: { label: 'WP-10 · RUBICON', live: false },
+};
+
+/* ── SIDEBAR TOGGLE ──────────────────────────────────────── */
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const body    = document.body;
+  sidebar.classList.toggle('collapsed');
+  body.classList.toggle('sidebar-open');
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+function clearActive() {
+  document.querySelectorAll('#nav-list a').forEach(a => a.classList.remove('active'));
+}
+
+function hideAll() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('placeholder-wrap').style.display = 'none';
+  document.querySelectorAll('.paper-container').forEach(el => el.style.display = 'none');
+}
+
+function showLanding() {
+  clearActive();
+  document.getElementById('nav-home').classList.add('active');
+  hideAll();
+  document.getElementById('landing').style.display = 'flex';
+  document.getElementById('breadcrumb').innerHTML = '<span>Portfolio</span>';
+  document.getElementById('topbar-actions').innerHTML =
+    '<button class="btn" onclick="exportPDF()">⎙ Export PDF</button>' +
+    '<button class="btn" onclick="exportWord()">⬇ Export Word</button>';
+}
+
+function showPaper(id) {
+  const p = papers[id];
+  if (!p) return;
+  clearActive();
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+  hideAll();
+
+  const container = document.getElementById('paper-' + id);
+  if (container) {
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.flex = '1';
+    container.style.minHeight = '0';
+  } else {
+    showPlaceholder(id, p.label);
+    return;
+  }
+
+  document.getElementById('breadcrumb').innerHTML =
+    '<span class="crumb-link" onclick="showLanding()">Portfolio</span> &rsaquo; <span>' + p.label + '</span>';
+  document.getElementById('topbar-actions').innerHTML =
+    '<button class="btn back" onclick="showLanding()">← Portfolio</button>' +
+    '<button class="btn" onclick="exportPDF()">⎙ Export PDF</button>' +
+    '<button class="btn primary" onclick="exportWord()">⬇ Export Word</button>';
+
+  document.getElementById('main').scrollTop = 0;
+}
+
+function showPlaceholder(id, label) {
+  hideAll();
+  const name = label.split('·')[1].trim();
+  document.getElementById('placeholder-body').innerHTML = `
+    <div style="font-family:'Courier New',monospace;font-size:10px;letter-spacing:3px;color:var(--ink-light);text-transform:uppercase;margin-bottom:6px;">Coming Soon</div>
+    <div style="font-size:46px;color:var(--gold);font-weight:normal;letter-spacing:-1px;margin-bottom:10px;">${name}</div>
+    <div style="font-size:15px;color:var(--ink-mid);font-style:italic;max-width:480px;line-height:1.6;">This paper is in the planned portfolio and will be added as drafting progresses.</div>
+    <button class="btn back" style="margin-top:14px;" onclick="showLanding()">← Back to Portfolio</button>
+  `;
+  document.getElementById('placeholder-wrap').style.display = 'flex';
+  document.getElementById('breadcrumb').innerHTML =
+    '<span class="crumb-link" onclick="showLanding()">Portfolio</span> &rsaquo; <span>' + label + '</span>';
+  document.getElementById('topbar-actions').innerHTML =
+    '<button class="btn back" onclick="showLanding()">← Portfolio</button>';
+}
+
+/* ── EXPORT PDF ──────────────────────────────────────────── */
+function exportPDF() {
+  window.print();
+}
+
+/* ── EXPORT WORD ─────────────────────────────────────────── */
+function exportWord() {
+  // Find the visible paper or landing
+  let content = '';
+  let title   = 'WhitePaper_Portfolio';
+
+  const activePaper = [...document.querySelectorAll('.paper-container')]
+    .find(el => el.style.display !== 'none' && el.style.display !== '');
+
+  if (activePaper) {
+    const hero    = activePaper.querySelector('.paper-hero');
+    const article = activePaper.querySelector('.paper-article');
+    const footer  = activePaper.querySelector('.paper-footer');
+    const wpTitle = hero ? hero.querySelector('h2').textContent.trim() : 'White Paper';
+    title = 'WP_' + wpTitle;
+    content = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office'
+            xmlns:w='urn:schemas-microsoft-com:office:word'
+            xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'>
+      <style>
+        body { font-family: Georgia, serif; font-size: 12pt; color: #2b2410; margin: 2cm; }
+        h1 { font-size: 28pt; color: #d8b74b; }
+        h2 { font-size: 16pt; color: #ce8946; border-bottom: 1pt solid #e8d89a; padding-bottom: 4pt; margin-top: 24pt; }
+        h3 { font-size: 13pt; color: #5a4a28; margin-top: 16pt; }
+        table { width: 100%; border-collapse: collapse; margin: 12pt 0; font-size: 10pt; }
+        th { background: #2b2410; color: #d8b74b; padding: 6pt 10pt; text-align: left; }
+        td { padding: 5pt 10pt; border-bottom: 1pt solid #e8d89a; }
+        pre, code { font-family: Courier New, monospace; font-size: 9pt; background: #f5edcc; padding: 2pt 4pt; }
+        pre { display: block; padding: 10pt; margin: 10pt 0; }
+        blockquote { border-left: 3pt solid #d8b74b; padding-left: 12pt; font-style: italic; color: #5a4a28; }
+        .footer { border-top: 1pt solid #e8d89a; margin-top: 24pt; padding-top: 8pt; font-size: 9pt; color: #8a7a55; font-family: Courier New, monospace; }
+      </style>
+      </head><body>
+      ${hero ? `<h1>${wpTitle}</h1><p><em>${hero.querySelector('.subtitle') ? hero.querySelector('.subtitle').textContent : ''}</em></p><hr>` : ''}
+      ${article ? article.innerHTML : ''}
+      ${footer ? `<div class="footer">${footer.innerHTML}</div>` : ''}
+      </body></html>`;
+  } else {
+    title = 'WhitePaper_Portfolio_Overview';
+    content = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office'
+            xmlns:w='urn:schemas-microsoft-com:office:word'
+            xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><meta charset='utf-8'>
+      <style>
+        body { font-family: Georgia, serif; font-size: 12pt; color: #2b2410; margin: 2cm; }
+        h1 { font-size: 28pt; color: #d8b74b; }
+        h2 { font-size: 16pt; color: #ce8946; margin-top: 18pt; }
+        .footer { border-top: 1pt solid #e8d89a; margin-top: 24pt; padding-top: 8pt; font-size: 9pt; color: #8a7a55; font-family: Courier New, monospace; }
+      </style>
+      </head><body>
+      <h1>White Paper Portfolio</h1>
+      <p><em>Sumit Kumar Mitra · Senior TPM · AI / Cloud / Open Standards</em></p>
+      <p>Ten papers addressing open problems in distributed AI systems, autonomous orchestration, and production-scale intelligent infrastructure.</p>
+      <hr>
+      <h2>WP-01 · PRAGMA</h2><p>From Intent Expression to System Action: Designing a REST API Contract for Declarative Intent Management</p>
+      <h2>WP-02 · AGENTIS</h2><p>Standardising Multi-Agent Coordination: MCP, A2A, and the Protocol Grammar for Autonomous Systems</p>
+      <h2>WP-03 · LUMINOS</h2><p>LLM Observability at Scale: Defining SLIs and SLOs for Foundation Models in Production Infrastructure</p>
+      <h2>WP-04 · SPEKTRA</h2><p>AI-Native Resource Scheduling: How Large Language Models Reshape Distributed Workload Orchestration</p>
+      <h2>WP-05 · TESSERA</h2><p>Federated Learning as a First-Class Infrastructure Resource</p>
+      <h2>WP-06 · AEGIS</h2><p>The Agent Security Gap: Why There Is No Sandboxing Standard for Autonomous AI Agents</p>
+      <h2>WP-07 · ROSETTA</h2><p>Cross-Domain Intent Orchestration: A Unified Translation Layer Across Competing Open Standards</p>
+      <h2>WP-08 · PRISM</h2><p>Accelerator Abstraction for AI Infrastructure: A Unified GPU/NPU/DPU Resource Model</p>
+      <h2>WP-09 · VERITAS</h2><p>Explainable Autonomous Systems: Compliance Architecture for Closed-Loop AI Under the EU AI Act</p>
+      <h2>WP-10 · RUBICON</h2><p>The Production Gap: Why Most AI Pilots Never Reach Operations</p>
+      <div class="footer">© 2026 Sumit Kumar Mitra. All rights reserved. White Paper Portfolio.</div>
+      </body></html>`;
+  }
+
+  const blob = new Blob(['﻿', content], { type: 'application/msword' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = title + '.doc';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ── SWAGGER TOGGLES ─────────────────────────────────────── */
+function toggleEndpoint(header) {
+  header.closest('.sw-endpoint').classList.toggle('open');
+}
+
+function toggleSchema(header) {
+  header.closest('.sw-schema').classList.toggle('open');
+}
+
+/* ── INIT ────────────────────────────────────────────────── */
+document.getElementById('landing').style.display = 'flex';
+document.getElementById('nav-home').classList.add('active');
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') showLanding();
+});
+</script>
+
+</body>
+</html>
